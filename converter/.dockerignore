@@ -1,0 +1,4 @@
+*
+!supervisord.conf
+!opt
+!filebeat/filebeat.yml
