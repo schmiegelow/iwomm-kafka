@@ -1,4 +1,0 @@
-[0m[[0m[33mwarn[0m] [0m[0m/home/vagrant/dev/hvmd/integration/converter/src/main/scala/com/hivemindtechnologies/converter/KafkaConverter.scala:16:16: overriding method main in trait App is deprecated (since 2.11.0): main should not be overridden[0m
-[0m[[0m[33mwarn[0m] [0m[0m  override def main(args: Array[String]): Unit = {[0m
-[0m[[0m[33mwarn[0m] [0m[0m               ^[0m
-[0m[[0m[33mwarn[0m] [0m[0mone warning found[0m
