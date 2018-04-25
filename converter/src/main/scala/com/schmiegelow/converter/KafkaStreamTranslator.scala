@@ -44,13 +44,15 @@ object KafkaStreamTranslator extends LazyLogging {
 
   }
 
-  def createTopology(builder: StreamsBuilder, input: String, output: String) = {
+  def createTopology(builder: StreamsBuilder, input: String, output: String): Unit = {
     // Read the input Kafka topic into a KStream instance.
     val textLines: KStream[String, Array[Byte]] = builder.stream(input)
 
     val incomingValues: KStream[String, Array[Byte]] = textLines.mapValues(value => {
+
       val text = new String(value)
       val fromLanguage = detectLanguage(text)
+      logger.info(s"Translating $text in $fromLanguage to English")
       translateText(text, fromLanguage).getTranslatedText.getBytes()
     })
 
