@@ -10,7 +10,7 @@ import com.google.cloud.translate.Translation
 import org.apache.kafka.common.serialization.Serdes
 import org.apache.kafka.streams.kstream.KStream
 import org.apache.kafka.streams.{KafkaStreams, StreamsBuilder, StreamsConfig}
-
+import org.apache.kafka.clients.consumer.ConsumerConfig
 
 object KafkaStreamTranslator extends LazyLogging {
 
@@ -19,13 +19,14 @@ object KafkaStreamTranslator extends LazyLogging {
   def main(args: Array[String]): Unit = {
 
 
-    val bootstrapServers = if (args.length > 0) args(0) else "kafka01.internal-service:9092"
+    val bootstrapServers = if (args.length > 0) args(0) else "kafka01.internal-service:9092,kafka02.internal-service:9093,kafka03.internal-service:9094"
     val builder = new StreamsBuilder
 
     val streamingConfig = {
       val settings = new Properties
       settings.put(StreamsConfig.APPLICATION_ID_CONFIG, getClass.getName)
       settings.put(StreamsConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers)
+      settings.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest")
       // Specify default (de)serializers for record keys and for record values.
       settings.put(StreamsConfig.DEFAULT_KEY_SERDE_CLASS_CONFIG, Serdes.String.getClass.getName)
       settings.put(StreamsConfig.DEFAULT_VALUE_SERDE_CLASS_CONFIG, Serdes.ByteArray().getClass.getName)

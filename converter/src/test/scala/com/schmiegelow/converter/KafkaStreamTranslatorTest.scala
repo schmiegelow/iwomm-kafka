@@ -1,5 +1,6 @@
 package com.schmiegelow.converter
 
+import com.google.cloud.translate.TranslateException
 import com.madewithtea.mockedstreams.MockedStreams
 import org.apache.kafka.common.serialization.Serdes
 import org.scalatest._
@@ -35,6 +36,18 @@ class KafkaStreamTranslatorTest extends FunSpecLike with GivenWhenThen with Matc
 
       Then("It is detected as Russian")
       assert(detected == "ru")
+    }
+
+    it("should break on en to en translations") {
+      Given("A text in English")
+
+      val text = "A text in English"
+
+      When("It is passed to Detect")
+
+      assertThrows[TranslateException](KafkaStreamTranslator.translateText(text, "en"))
+
+
     }
 
     it("should simulate a stream of incoming foreign texts") {
