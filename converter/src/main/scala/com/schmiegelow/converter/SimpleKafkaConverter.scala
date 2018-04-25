@@ -6,9 +6,9 @@ import com.typesafe.config.{Config, ConfigFactory}
 import com.typesafe.scalalogging.LazyLogging
 import org.apache.kafka.common.serialization._
 import org.apache.kafka.streams._
-import org.apache.kafka.streams.kstream.{KStream, Produced}
+import org.apache.kafka.streams.kstream.KStream
 
-object KafkaConverter extends LazyLogging {
+object SimpleKafkaConverter extends LazyLogging {
 
   val configuration: Config = ConfigFactory.load()
 
@@ -23,11 +23,11 @@ object KafkaConverter extends LazyLogging {
       settings.put(StreamsConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers)
       // Specify default (de)serializers for record keys and for record values.
       settings.put(StreamsConfig.DEFAULT_KEY_SERDE_CLASS_CONFIG, Serdes.String.getClass.getName)
-      settings.put(StreamsConfig.DEFAULT_VALUE_SERDE_CLASS_CONFIG, Serdes.String.getClass.getName)
+      settings.put(StreamsConfig.DEFAULT_VALUE_SERDE_CLASS_CONFIG, Serdes.ByteArray().getClass.getName)
       settings
     }
 
-    createTopology(builder)
+    createUppercaseTopology(builder, "topic-in", "topic-out")
 
     val stream: KafkaStreams = new KafkaStreams(builder.build(), streamingConfig)
 
@@ -39,19 +39,14 @@ object KafkaConverter extends LazyLogging {
 
   }
 
-  def createTopology(builder: StreamsBuilder): Unit = {
+  def createUppercaseTopology(builder: StreamsBuilder, input: String, output: String): Unit = {
 
     // Read the input Kafka topic into a KStream instance.
-    val textLines: KStream[String, Array[Byte]] = builder.stream( "topic-in")
+    val textLines: KStream[String, Array[Byte]] = builder.stream(input)
 
-    // Variant 1: using `mapValues`
     val uppercasedWithMapValues: KStream[String, Array[Byte]] = textLines.mapValues(new String(_).toUpperCase().getBytes())
 
-    // Write (i.e. persist) the results to a new Kafka topic called "UppercasedTextLinesTopic".
-    //
-    // In this case we can rely on the default serializers for keys and values because their data
-    // types did not change, i.e. we only need to provide the name of the output topic.
-    uppercasedWithMapValues.to("topic-out")
+    uppercasedWithMapValues.to(output)
 
   }
 }

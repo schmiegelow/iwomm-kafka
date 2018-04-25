@@ -1,0 +1,53 @@
+package com.schmiegelow.converter
+
+import com.madewithtea.mockedstreams.MockedStreams
+import org.apache.kafka.common.serialization.Serdes
+import org.scalatest._
+
+class KafkaStreamTranslatorTest extends FunSpecLike with GivenWhenThen with Matchers {
+
+  describe("KafkaStreamTranslatorTest") {
+
+    it("should translateText") {
+
+      Given("A text in Russian")
+
+      val text = "Спасибо! Ваш заказ был размещен."
+
+      When("It is passed to Translate")
+
+      val translated = KafkaStreamTranslator.translateText(text, "ru")
+
+      Then("It is translated to English")
+
+      assert(translated.getTranslatedText() == "Thank you! Your order has been placed.")
+    }
+
+
+    it("should detect languages") {
+      Given("A text in Russian")
+
+      val text = "Спасибо! Ваш заказ был размещен."
+
+      When("It is passed to Detect")
+
+      val detected = KafkaStreamTranslator.detectLanguage(text)
+
+      Then("It is detected as Russian")
+      assert(detected == "ru")
+    }
+
+    it("should simulate a stream of incoming foreign texts") {
+      val input = Seq(("x", "Das ist ein test auf Deutsch"), ("y", "Ce ci est un test en Francais"))
+      val exp = Seq(("x", "This is a test in German"), ("y", "This is a test in French"))
+      val strings = Serdes.String()
+
+      MockedStreams()
+        .topology { builder => KafkaStreamTranslator.createTopology(builder, "topic-in", "topic-out") }
+        .input("topic-in", strings, strings, input)
+        .output("topic-out", strings, strings, exp.size) shouldEqual exp
+    }
+  }
+
+
+}

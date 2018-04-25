@@ -15,7 +15,7 @@ import scala.concurrent._
 import ExecutionContext.Implicits.global
 import scala.util.{Failure, Success}
 
-class KafkaConverterTest extends org.scalatest.FunSpec
+class SimpleKafkaConverterTest extends org.scalatest.FunSpec
   with GivenWhenThen
   with Matchers
   with BeforeAndAfterAll {
@@ -27,25 +27,8 @@ class KafkaConverterTest extends org.scalatest.FunSpec
     val strings = Serdes.String()
 
     MockedStreams()
-      .topology { builder => KafkaConverter.createTopology(builder) }
+      .topology { builder => SimpleKafkaConverter.createUppercaseTopology(builder, "topic-in", "topic-out") }
       .input("topic-in", strings, strings, input)
       .output("topic-out", strings, strings, exp.size) shouldEqual exp
-  }
-}
-
-final case class NewsArticleInfo(name: String, url: String)
-
-object UrlsCsvReader {
-  def getNewsArticles(n: Int = 100): Iterator[NewsArticleInfo] = {
-    Source
-      .fromURL(getClass.getResource("/2018-03-07_news_articles_to_crawl.csv"), Codec.formatted("UTF-8"))
-      .getLines.slice(1, n + 1)
-      .flatMap { line =>
-        val tokens = line.split("\t")
-        for {
-          name <- tokens.headOption
-          url <- tokens.lastOption
-        } yield NewsArticleInfo(name, url)
-      }
   }
 }

@@ -11,6 +11,7 @@ import scala.concurrent.duration._
 import scala.concurrent._
 import scala.collection.JavaConverters._
 import ExecutionContext.Implicits.global
+import scala.io.{Codec, Source}
 import scala.util.{Failure, Success}
 
 class SimplePubSubServiceTest extends org.scalatest.FunSpec
@@ -51,6 +52,7 @@ class SimplePubSubServiceTest extends org.scalatest.FunSpec
       while (deadline.hasTimeLeft) {
         records ++ consumer.poll(100).asScala
       }
+      consumer.commitSync()
       records
     }
 
@@ -71,4 +73,22 @@ class SimplePubSubServiceTest extends org.scalatest.FunSpec
 
   }
 
+}
+
+
+final case class NewsArticleInfo(name: String, url: String)
+
+object UrlsCsvReader {
+  def getNewsArticles(n: Int = 100): Iterator[NewsArticleInfo] = {
+    Source
+      .fromURL(getClass.getResource("/2018-03-07_news_articles_to_crawl.csv"), Codec.formatted("UTF-8"))
+      .getLines.slice(1, n + 1)
+      .flatMap { line =>
+        val tokens = line.split("\t")
+        for {
+          name <- tokens.headOption
+          url <- tokens.lastOption
+        } yield NewsArticleInfo(name, url)
+      }
+  }
 }

@@ -4,7 +4,8 @@ scalaVersion := "2.12.3"
 libraryDependencies ++= {
   val kafkaV = "1.0.1"
   Seq(
-    "org.apache.kafka" % "kafka-streams" % kafkaV
+    "org.apache.kafka" % "kafka-streams" % kafkaV,
+    "com.google.cloud" % "google-cloud-translate" % "1.26.0"
   )
 }
 
@@ -19,7 +20,6 @@ excludeDependencies ++= {
 
 lazy val dockerSettings = Seq(
   packageName in Docker := "converter",
-  maintainer in Docker := "Hivemind Technologies <info@hivemindtechologies.com>",
   packageSummary in Docker := "converter service",
   packageDescription := "Docker converter service",
   dockerEntrypoint := Seq("bin/converter"),
