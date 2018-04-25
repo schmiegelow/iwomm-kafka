@@ -38,14 +38,16 @@ class KafkaStreamTranslatorTest extends FunSpecLike with GivenWhenThen with Matc
     }
 
     it("should simulate a stream of incoming foreign texts") {
-      val input = Seq(("x", "Das ist ein test auf Deutsch"), ("y", "Ce ci est un test en Francais"))
+      val input = Seq(("x", "Das ist ein test auf Deutsch"),
+        ("y", "Ce ci est un test en Francais"),
+        ("z", "This is a test in English"))
       val exp = Seq(("x", "This is a test in German"), ("y", "This is a test in French"))
-      val strings = Serdes.String()
+      val bytes = Serdes.String()
 
       MockedStreams()
         .topology { builder => KafkaStreamTranslator.createTopology(builder, "topic-in", "topic-out") }
-        .input("topic-in", strings, strings, input)
-        .output("topic-out", strings, strings, exp.size) shouldEqual exp
+        .input("topic-in", bytes, bytes, input)
+        .output("topic-out", bytes, bytes, exp.size) shouldEqual exp
     }
   }
 
