@@ -26,7 +26,7 @@ object KafkaStreamTranslator extends LazyLogging {
       val settings = new Properties
       settings.put(StreamsConfig.APPLICATION_ID_CONFIG, getClass.getName)
       settings.put(StreamsConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers)
-      settings.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest")
+      //settings.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest")
       // Specify default (de)serializers for record keys and for record values.
       settings.put(StreamsConfig.DEFAULT_KEY_SERDE_CLASS_CONFIG, Serdes.ByteArray().getClass.getName)
       settings.put(StreamsConfig.DEFAULT_VALUE_SERDE_CLASS_CONFIG, Serdes.ByteArray().getClass.getName)
