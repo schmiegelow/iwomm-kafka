@@ -10,7 +10,7 @@ to start the cluster.
 
 Exec into a kafka node and run 
 
-```kafka-topic --create --if-not-exists --zookeeper zookeeper.internal-service:2181 --replication-factor 3 --partitions 1 --topic articles```
+```kafka-topics --create --if-not-exists --zookeeper zookeeper.internal-service:2181 --replication-factor 3 --partitions 1 --topic articles```
 
 The converter SBT project contains a few tests:
 
@@ -20,4 +20,4 @@ The converter SBT project contains a few tests:
 
 ## KafkaStreamsTranslator 
 
-KafkaStreamsTranslator is a simple KafkaStreams app
+KafkaStreamsTranslator is a simple KafkaStreams app, which translates text using Google Translate into english. You will need a valid GCP API key.
